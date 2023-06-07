@@ -39,7 +39,9 @@ func main() {
 	checkError(err)
 	defer func() {
 		err = repos.Close()
-		log.Println("error when closing pool connection:", err.Error())
+		if err != nil {
+			log.Println("error when closing pool connection:", err.Error())
+		}
 	}()
 
 	service := service.NewService(conf, repos)
