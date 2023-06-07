@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/fidesy/ozon-test/internal/config"
@@ -21,20 +22,29 @@ var (
 )
 
 func TestURLService_CreateShortURL(t *testing.T) {
-	repos, err := persistence.NewRepository(context.Background(), config.Default)
+	defaultConfig := config.Default
+	repos, err := persistence.NewRepository(context.Background(), defaultConfig)
 	assert.Nil(t, err)
 
-	service := NewURLServiceImpl(config.Default, repos)
+	service := NewURLServiceImpl(defaultConfig, repos)
 
 	for i := range urls {
 		hash := utils.GenerateShortURL(urls[i].OriginalURL)
 
 		shortURL, err := service.CreateShortURL(urls[i])
 		assert.Nil(t, err)
-		assert.Contains(t, shortURL, hash)
+		assert.Equal(
+			t, 
+			shortURL, 
+			fmt.Sprintf(
+				"%s:%s/%s", 
+				defaultConfig.Host, 
+				defaultConfig.Port,
+				hash,
+			),
+		)
 	}
 }
-
 
 func TestURLService_GetOriginalURL(t *testing.T) {
 	repos, err := persistence.NewRepository(context.Background(), config.Default)

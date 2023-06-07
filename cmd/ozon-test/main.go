@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,6 +20,12 @@ func main() {
 	conf, err := config.Load("./configs/config.yml")
 	checkError(err)
 
+	db := flag.String("db", "", "database to store URLs")
+	flag.Parse()
+	if *db != "" {
+		conf.Database = *db
+	}
+
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
 		syscall.SIGINT,
@@ -30,6 +37,10 @@ func main() {
 
 	repos, err := persistence.NewRepository(ctx, conf)
 	checkError(err)
+	defer func() {
+		err = repos.Close()
+		log.Println("error when closing pool connection:", err.Error())
+	}()
 
 	service := service.NewService(conf, repos)
 	handlers := handler.New(service)

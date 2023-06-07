@@ -11,3 +11,8 @@ func New() *InMemory {
 		NewURLRepository(),
 	}
 }
+
+// dummy function to implement the interface
+func (i *InMemory) Close() error {
+	return nil
+}

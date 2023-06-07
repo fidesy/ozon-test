@@ -16,20 +16,20 @@ var (
 		{OriginalURL: "https://apple.com/some/path"},
 	}
 
-	repo = NewURLRepository()
+	// repo = NewURLRepository()
 )
 
 // only makes sense in context with GetURL
 func TestInMemoryURLRepository_CreateURL(t *testing.T) {
+	repo := NewURLRepository()
+
 	for i := range urls {
 		urls[i].Hash = utils.GenerateShortURL(urls[i].OriginalURL)
 
 		id, err := repo.CreateURL(
 			context.Background(),
-			domain.URL{
-				OriginalURL: urls[i].OriginalURL,
-				Hash:        urls[i].Hash,
-			})
+			urls[i],
+		)
 
 		assert.Nil(t, err)
 		assert.NotEqual(t, 0, id)
@@ -37,9 +37,20 @@ func TestInMemoryURLRepository_CreateURL(t *testing.T) {
 }
 
 func TestInMemoryURLRepository_GetURLByHash(t *testing.T) {
-	for _, url := range urls {
-		_url, err := repo.GetURLByHash(context.Background(), url.Hash)
+	repo := NewURLRepository()
+
+	for i := range urls {
+		// create short url
+		urls[i].Hash = utils.GenerateShortURL(urls[i].OriginalURL)
+		_, err := repo.CreateURL(
+			context.Background(),
+			urls[i],
+		)
 		assert.Nil(t, err)
-		assert.Equal(t, url.OriginalURL, _url.OriginalURL)
+
+		// get original URL from the short
+		url, err := repo.GetURLByHash(context.Background(), urls[i].Hash)
+		assert.Nil(t, err)
+		assert.Equal(t, urls[i].OriginalURL, url.OriginalURL)
 	}
 }

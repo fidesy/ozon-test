@@ -10,12 +10,14 @@ import (
 )
 
 type Postgres struct {
+	pool *pgxpool.Pool
 	domain.URLRepository
 }
 
 func New(pool *pgxpool.Pool) *Postgres {
 	return &Postgres{
-		NewURLRepository(pool),
+		pool: pool,
+		URLRepository: NewURLRepository(pool),
 	}
 }
 
@@ -39,4 +41,9 @@ func NewPool(ctx context.Context, conf config.Postgres) (*pgxpool.Pool, error) {
 	}
 
 	return pool, nil
+}
+
+func (p *Postgres) Close() error {
+	p.pool.Close()
+	return nil
 }

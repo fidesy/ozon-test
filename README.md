@@ -82,7 +82,10 @@ cp .env.example .env
 ``` 
 
 3. Выбрать необходимую базу данных [./configs/config.yaml](./configs/config.yml#4) 
-поле *database*, опции: postgres, in-memory
+поле *database*, опции: postgres, in-memory. Также есть возможность переопределить данное значение указав соответствующих флаг при запуске сервиса в Dockerfile
+```dockerfile
+ENTRYPOINT ["main", "-db", "postgres"]
+```
 
 4. Запустить приложение.
 ```

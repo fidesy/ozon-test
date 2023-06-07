@@ -12,6 +12,7 @@ import (
 )
 
 type Repository interface {
+	Close() error
 	domain.URLRepository
 }
 

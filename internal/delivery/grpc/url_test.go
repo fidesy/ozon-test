@@ -24,7 +24,7 @@ var (
 
 func TestGRPCURLHandler_createShortURL(t *testing.T) {
 	defaultConfig := config.Default
-	
+
 	repos, err := persistence.NewRepository(context.Background(), defaultConfig)
 	assert.Nil(t, err)
 
@@ -33,15 +33,15 @@ func TestGRPCURLHandler_createShortURL(t *testing.T) {
 
 	for i := range urls {
 		urls[i].Hash = utils.GenerateShortURL(urls[i].OriginalURL)
-		expected := fmt.Sprintf("%s:%s/%s", 
-			defaultConfig.Host, 
+		expected := fmt.Sprintf("%s:%s/%s",
+			defaultConfig.Host,
 			defaultConfig.Port,
 			urls[i].Hash,
 		)
 		request := &shortener.CreateShortURLRequest{
 			OriginalUrl: urls[i].OriginalURL,
 		}
-		
+
 		response, err := server.CreateShortURL(context.Background(), request)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, response.ShortUrl)
@@ -50,7 +50,7 @@ func TestGRPCURLHandler_createShortURL(t *testing.T) {
 
 func TestGRPCURLHandler_getOriginalURL(t *testing.T) {
 	defaultConfig := config.Default
-	
+
 	repos, err := persistence.NewRepository(context.Background(), defaultConfig)
 	assert.Nil(t, err)
 
@@ -61,7 +61,7 @@ func TestGRPCURLHandler_getOriginalURL(t *testing.T) {
 		request := &shortener.GetOriginalURLRequest{
 			Hash: urls[i].Hash,
 		}
-		
+
 		response, err := server.GetOriginalURL(context.Background(), request)
 		assert.NoError(t, err)
 		assert.Equal(t, urls[i].OriginalURL, response.OriginalUrl)

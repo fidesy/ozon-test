@@ -14,4 +14,4 @@ WORKDIR /app
 COPY --from=builder /app/configs ./configs
 COPY --from=builder /app/main /usr/bin/
 
-ENTRYPOINT ["main"]
+ENTRYPOINT ["main", "-db", "postgres"]

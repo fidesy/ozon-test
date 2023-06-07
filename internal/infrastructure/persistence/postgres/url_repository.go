@@ -52,7 +52,7 @@ func (r *URLRepository) GetURLByHash(ctx context.Context, hash string) (domain.U
 		if errors.Is(err, pgx.ErrNoRows) {
 			return domain.URL{}, dberrors.ErrHashDoesNotExist
 		}
-		
+
 		return domain.URL{}, err
 	}
 

@@ -35,10 +35,8 @@ func TestPostgresURLRepository_CreateURL(t *testing.T) {
 
 		id, err := repo.CreateURL(
 			context.Background(),
-			domain.URL{
-				OriginalURL: urls[i].OriginalURL,
-				Hash:        urls[i].Hash,
-			})
+			urls[i],
+		)
 
 		assert.Nil(t, err)
 		assert.NotEqual(t, 0, id)
