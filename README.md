@@ -95,14 +95,81 @@ docker compose up -d
 
 Создание сокращенной ссылки
 ```bash
-curl -X POST -d '{"original_url": "https://ozon.ru"}' "http://localhost:8000/api/create"
+curl -i -X POST -d '{"original_url": "https://ozon.ru"}' "http://localhost:8000/api/create"
 
+# Headers
+# HTTP/1.1 201 Created
+# Content-Type: application/json; charset=utf-8
+# Date: Wed, 07 Jun 2023 12:26:01 GMT
+# Content-Length: 48
+# ----------------------------------
+# Response body
 # {"short_url":"http://localhost:8000/WkLSvXb94k"}
 ```
 
 Получение оригинальной ссылки
 ```bash
-curl http://localhost:8000/WkLSvXb94k
+curl -i http://localhost:8000/WkLSvXb94k
 
+# Headers
+# HTTP/1.1 200 OK
+# Content-Type: application/json; charset=utf-8
+# Date: Wed, 07 Jun 2023 12:26:39 GMT
+# Content-Length: 34
+# ----------------------------------
+# Response body
 # {"original_url":"https://ozon.ru"}
+```
+
+Повторное создание сокращенной ссылки для уже созданной оригинальной
+```bash
+curl -i -X POST -d '{"original_url": "https://ozon.ru"}' "http://localhost:8000/api/create"
+
+# Headers
+# HTTP/1.1 409 Conflict
+# Content-Type: application/json; charset=utf-8
+# Date: Wed, 07 Jun 2023 12:27:05 GMT
+# Content-Length: 32
+# ----------------------------------
+# Response body
+# {"message":"URL already exists"}
+```
+
+Попытка создать ссылку с невалидным телом запроса
+```bash
+curl -i -X POST -d '{"example": "https://ozon.ru"}' "http://localhost:8000/api/create"
+
+# Headers
+# HTTP/1.1 400 Bad Request
+# Date: Wed, 07 Jun 2023 12:28:51 GMT
+# Content-Length: 106
+# Content-Type: text/plain; charset=utf-8
+# ----------------------------------
+# Response body
+# {"message":"Key: 'URL.OriginalURL' Error:Field validation for 'OriginalURL' failed on the 'required' tag"}
+
+curl -i -X POST -d '{"original_url": "http//invalid.com"}' "http://localhost:8000/api/create"
+
+# Headers
+# HTTP/1.1 400 Bad Request
+# Content-Type: application/json; charset=utf-8
+# Date: Wed, 07 Jun 2023 12:30:13 GMT
+# Content-Length: 65
+# ----------------------------------
+# Response body
+# {"message":"the URL provided is invalid and cannot be processed"}
+```
+
+Попытка получить ссылку по несуществующей сокращенной
+```bash
+curl -i http://localhost:8000/WkLSvXbOOO
+
+# Headers
+# HTTP/1.1 404 Not Found
+# Content-Type: application/json; charset=utf-8
+# Date: Wed, 07 Jun 2023 12:31:43 GMT
+# Content-Length: 27
+# ----------------------------------
+# Response body
+# {"message":"URL not found"}
 ```
