@@ -1,22 +1,27 @@
-package usecase
+package service
 
 import (
 	"context"
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/fidesy/ozon-test/internal/config"
 	"github.com/fidesy/ozon-test/internal/domain"
 	"github.com/fidesy/ozon-test/pkg/utils"
 )
 
-type URLUsecaseImpl struct {
+const (
+	verifyPattern = `^(https?|ftp)://[^\s/$.?#].[^\s]*$`
+)
+
+type URLServiceImpl struct {
 	conf config.Config
 	repo domain.URLRepository
 }
 
-func NewURLUsecaseImpl(conf config.Config, repo domain.URLRepository) *URLUsecaseImpl {
-	u := &URLUsecaseImpl{
+func NewURLServiceImpl(conf config.Config, repo domain.URLRepository) *URLServiceImpl {
+	u := &URLServiceImpl{
 		conf: conf,
 		repo: repo,
 	}
@@ -28,9 +33,9 @@ func NewURLUsecaseImpl(conf config.Config, repo domain.URLRepository) *URLUsecas
 	return u
 }
 
-var _ domain.URLUsecase = &URLUsecaseImpl{}
+var _ domain.URLService = &URLServiceImpl{}
 
-func (u *URLUsecaseImpl) CreateShortURL(url domain.URL) string {
+func (u *URLServiceImpl) CreateShortURL(url domain.URL) (string, error) {
 	var (
 		hash, shortURL string
 		sequence       = url.OriginalURL
@@ -44,10 +49,10 @@ func (u *URLUsecaseImpl) CreateShortURL(url domain.URL) string {
 		// hash already exists
 		if err == nil {
 			if dbURL.OriginalURL == url.OriginalURL {
-				return shortURL
+				return shortURL, domain.ErrURLAlreadyExists
 			}
 
-			// collision occured
+			// collision occurred
 			sequence += hash
 			continue
 		}
@@ -55,26 +60,34 @@ func (u *URLUsecaseImpl) CreateShortURL(url domain.URL) string {
 		break
 	}
 
-	log.Println("HERE", shortURL)
-
 	url.Hash = hash
+
 	_, err := u.repo.CreateURL(
 		context.TODO(),
 		url,
 	)
 	if err != nil {
 		log.Println("error creating short url:", err.Error())
-		return ""
+		return "", err
 	}
 
-	return shortURL
+	return shortURL, nil
 }
 
-func (u *URLUsecaseImpl) GetOriginalURL(hash string) (string, error) {
+func (u *URLServiceImpl) GetOriginalURL(hash string) (string, error) {
 	url, err := u.repo.GetURLByHash(context.TODO(), hash)
 	if err != nil {
 		return "", err
 	}
 
 	return url.OriginalURL, nil
+}
+
+func (u *URLServiceImpl) IsURLValid(url string) bool {
+	match, err := regexp.MatchString(verifyPattern, url)
+	if err != nil || !match {
+		return false
+	}
+
+	return true
 }

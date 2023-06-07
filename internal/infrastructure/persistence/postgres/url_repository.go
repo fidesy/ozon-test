@@ -2,8 +2,12 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
 	"github.com/fidesy/ozon-test/internal/domain"
+	"github.com/fidesy/ozon-test/internal/infrastructure/dberrors"
+
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -45,6 +49,10 @@ func (r *URLRepository) GetURLByHash(ctx context.Context, hash string) (domain.U
 		&url.OriginalURL,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.URL{}, dberrors.ErrHashDoesNotExist
+		}
+		
 		return domain.URL{}, err
 	}
 

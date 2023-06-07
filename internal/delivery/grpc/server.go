@@ -3,7 +3,7 @@ package grpc
 import (
 	"net"
 
-	"github.com/fidesy/ozon-test/internal/usecase"
+	"github.com/fidesy/ozon-test/internal/service"
 	shortener "github.com/fidesy/ozon-test/proto"
 
 	"google.golang.org/grpc"
@@ -11,12 +11,12 @@ import (
 
 type Server struct {
 	shortener.UnimplementedURLServiceServer
-	usecases *usecase.Usecase
+	service *service.Service
 }
 
-func NewServer(usecases *usecase.Usecase) *Server {
+func NewServer(service *service.Service) *Server {
 	return &Server{
-		usecases: usecases,
+		service: service,
 	}
 }
 

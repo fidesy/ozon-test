@@ -1,16 +1,16 @@
 package handler
 
 import (
-	"github.com/fidesy/ozon-test/internal/usecase"
+	"github.com/fidesy/ozon-test/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	usecases *usecase.Usecase
+	service *service.Service
 }
 
-func New(usecases *usecase.Usecase) *Handler {
-	return &Handler{usecases}
+func New(service *service.Service) *Handler {
+	return &Handler{service}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {

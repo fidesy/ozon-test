@@ -12,7 +12,7 @@ import (
 	"github.com/fidesy/ozon-test/internal/config"
 	"github.com/fidesy/ozon-test/internal/domain"
 	"github.com/fidesy/ozon-test/internal/infrastructure/persistence"
-	"github.com/fidesy/ozon-test/internal/usecase"
+	"github.com/fidesy/ozon-test/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
@@ -31,8 +31,8 @@ func getRouter(t *testing.T) *gin.Engine {
 	repos, err := persistence.NewRepository(context.Background(), config.Default)
 	assert.Nil(t, err)
 
-	usecases := usecase.NewUsecase(conf, repos)
-	handler := New(usecases)
+	service := service.NewService(conf, repos)
+	handler := New(service)
 
 	return handler.InitRoutes()
 }

@@ -15,7 +15,8 @@ type URLRepository interface {
 	GetURLByHash(ctx context.Context, hash string) (URL, error)
 }
 
-type URLUsecase interface {
-	CreateShortURL(url URL) string
+type URLService interface {
+	CreateShortURL(url URL) (string, error)
 	GetOriginalURL(shortURL string) (string, error)
+	IsURLValid(url string) bool
 }

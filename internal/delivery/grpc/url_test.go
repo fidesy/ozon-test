@@ -8,7 +8,7 @@ import (
 	"github.com/fidesy/ozon-test/internal/config"
 	"github.com/fidesy/ozon-test/internal/domain"
 	"github.com/fidesy/ozon-test/internal/infrastructure/persistence"
-	"github.com/fidesy/ozon-test/internal/usecase"
+	"github.com/fidesy/ozon-test/internal/service"
 	"github.com/fidesy/ozon-test/pkg/utils"
 	shortener "github.com/fidesy/ozon-test/proto"
 	"github.com/stretchr/testify/assert"
@@ -28,8 +28,8 @@ func TestGRPCURLHandler_createShortURL(t *testing.T) {
 	repos, err := persistence.NewRepository(context.Background(), defaultConfig)
 	assert.Nil(t, err)
 
-	usecases := usecase.NewUsecase(defaultConfig, repos)
-	server := NewServer(usecases)
+	service := service.NewService(defaultConfig, repos)
+	server := NewServer(service)
 
 	for i := range urls {
 		urls[i].Hash = utils.GenerateShortURL(urls[i].OriginalURL)
@@ -54,8 +54,8 @@ func TestGRPCURLHandler_getOriginalURL(t *testing.T) {
 	repos, err := persistence.NewRepository(context.Background(), defaultConfig)
 	assert.Nil(t, err)
 
-	usecases := usecase.NewUsecase(defaultConfig, repos)
-	server := NewServer(usecases)
+	service := service.NewService(defaultConfig, repos)
+	server := NewServer(service)
 
 	for i := range urls {
 		request := &shortener.GetOriginalURLRequest{

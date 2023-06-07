@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/fidesy/ozon-test/internal/domain"
-	"github.com/fidesy/ozon-test/internal/infrastructure/errors"
+	"github.com/fidesy/ozon-test/internal/infrastructure/dberrors"
 )
 
 type URLRepository struct {
@@ -22,8 +22,8 @@ func NewURLRepository() *URLRepository {
 var _ domain.URLRepository = &URLRepository{}
 
 func (r *URLRepository) CreateURL(ctx context.Context, url domain.URL) (int, error) {
-	r.RLock()
-	defer r.RUnlock()
+	r.Lock()
+	defer r.Unlock()
 
 	url.ID = len(r.hashToURL) + 1
 	r.hashToURL[url.Hash] = url
@@ -37,7 +37,7 @@ func (r *URLRepository) GetURLByHash(ctx context.Context, hash string) (domain.U
 
 	url, ok := r.hashToURL[hash]
 	if !ok {
-		return domain.URL{}, errors.ErrHashDoesNotExist
+		return domain.URL{}, dberrors.ErrHashDoesNotExist
 	}
 
 	return url, nil

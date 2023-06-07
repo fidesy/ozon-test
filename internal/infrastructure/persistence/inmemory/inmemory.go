@@ -2,7 +2,7 @@ package inmemory
 
 import "github.com/fidesy/ozon-test/internal/domain"
 
-type InMemory struct{
+type InMemory struct {
 	domain.URLRepository
 }
 

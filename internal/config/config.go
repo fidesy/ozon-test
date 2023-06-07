@@ -1,5 +1,11 @@
 package config
 
+import (
+	"os"
+
+	"gopkg.in/yaml.v2"
+)
+
 type Config struct {
 	Host     string   `yaml:"host"`
 	Port     string   `yaml:"port"`
@@ -30,4 +36,19 @@ var Default = Config{
 		DBName:   "postgres",
 		SSLMode:  "disable",
 	},
+}
+
+func Load(filepath string) (Config, error) {
+	file, err := os.ReadFile(filepath)
+	if err != nil {
+		return Config{}, err
+	}
+
+	var conf Config
+	err = yaml.Unmarshal(file, &conf)
+	if err != nil {
+		return Config{}, err
+	}
+
+	return conf, nil
 }

@@ -19,6 +19,7 @@ var (
 	repo = NewURLRepository()
 )
 
+// only makes sense in context with GetURL
 func TestInMemoryURLRepository_CreateURL(t *testing.T) {
 	for i := range urls {
 		urls[i].Hash = utils.GenerateShortURL(urls[i].OriginalURL)

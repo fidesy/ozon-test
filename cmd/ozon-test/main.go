@@ -8,15 +8,15 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/fidesy/ozon-test/internal/config"
 	"github.com/fidesy/ozon-test/internal/delivery/grpc"
 	"github.com/fidesy/ozon-test/internal/delivery/handler"
 	"github.com/fidesy/ozon-test/internal/infrastructure/persistence"
-	"github.com/fidesy/ozon-test/internal/usecase"
-	"github.com/fidesy/ozon-test/pkg/utils"
+	"github.com/fidesy/ozon-test/internal/service"
 )
 
 func main() {
-	conf, err := utils.LoadConfig("./configs/config.yml")
+	conf, err := config.Load("./configs/config.yml")
 	checkError(err)
 
 	ctx, cancel := signal.NotifyContext(
@@ -31,8 +31,8 @@ func main() {
 	repos, err := persistence.NewRepository(ctx, conf)
 	checkError(err)
 
-	usecases := usecase.NewUsecase(conf, repos)
-	handlers := handler.New(usecases)
+	service := service.NewService(conf, repos)
+	handlers := handler.New(service)
 	routes := handlers.InitRoutes()
 
 	// run http server
@@ -41,7 +41,7 @@ func main() {
 		checkError(err)
 	}()
 
-	grpcServer := grpc.NewServer(usecases)
+	grpcServer := grpc.NewServer(service)
 	go func() {
 		err = grpcServer.Start(fmt.Sprintf(":%s", conf.GrpcPort))
 		checkError(err)

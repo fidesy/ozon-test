@@ -5,7 +5,8 @@ import (
 
 	"github.com/fidesy/ozon-test/internal/config"
 	"github.com/fidesy/ozon-test/internal/domain"
-	"github.com/fidesy/ozon-test/internal/infrastructure/errors"
+
+	"github.com/fidesy/ozon-test/internal/infrastructure/dberrors"
 	"github.com/fidesy/ozon-test/internal/infrastructure/persistence/inmemory"
 	"github.com/fidesy/ozon-test/internal/infrastructure/persistence/postgres"
 )
@@ -26,6 +27,6 @@ func NewRepository(ctx context.Context, conf config.Config) (Repository, error) 
 	case "in-memory":
 		return inmemory.New(), nil
 	default:
-		return nil, errors.ErrInvalidDatabaseName
+		return nil, dberrors.ErrInvalidDatabaseName
 	}
 }

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package url;
+package shortener;
 
-option go_package = "github.com/fidesy/ozon-test/proto/url";
+option go_package = "github.com/fidesy/ozon-test/proto/shortener";
 
 
 service URLService {
