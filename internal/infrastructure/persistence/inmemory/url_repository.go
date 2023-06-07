@@ -10,6 +10,7 @@ import (
 
 type URLRepository struct {
 	hashToURL map[string]domain.URL
+	counter   int
 	sync.RWMutex
 }
 
@@ -25,7 +26,8 @@ func (r *URLRepository) CreateURL(ctx context.Context, url domain.URL) (int, err
 	r.Lock()
 	defer r.Unlock()
 
-	url.ID = len(r.hashToURL) + 1
+	r.counter++
+	url.ID = r.counter
 	r.hashToURL[url.Hash] = url
 
 	return url.ID, nil
