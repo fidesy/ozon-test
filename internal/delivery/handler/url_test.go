@@ -127,4 +127,10 @@ func TestURLHandler_getOriginalURL(t *testing.T) {
 		router.ServeHTTP(w, req)
 		assert.Equal(t, test.StatusCode, w.Code)
 	}
+
+	// test not found
+	req, _ := http.NewRequest(http.MethodGet, "/neverexisted", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusNotFound, w.Code)
 }
